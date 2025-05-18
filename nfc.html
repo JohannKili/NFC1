@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Scan erkannt</title>
+  <script>
+    fetch("https://ntfy.sh/scan-discord-nfc", {
+      method: "POST",
+      body: "⚠️ NFC-Tag wurde gescannt!"
+    }).then(() => {
+      document.getElementById("status").innerText = "✅ Benachrichtigung gesendet!";
+    }).catch(() => {
+      document.getElementById("status").innerText = "❌ Fehler beim Senden!";
+    });
+  </script>
+</head>
+<body style="font-family:sans-serif;text-align:center;margin-top:5em;">
+  <h2 id="status">⏳ Sende Benachrichtigung ...</h2>
+</body>
+</html>
