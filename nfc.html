@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Scan erkannt</title>
+  <script>
+    // Nachrichtentext
+    const message = "⚠️ NFC-Tag wurde gescannt!\nJemand steht an der Tür!";
+
+    // ntfy.sh Push
+    fetch("https://ntfy.sh/scan-discord-nfc", {
+      method: "POST",
+      body: message
+    }).then(() => {
+      document.getElementById("status").innerText = "✅ Benachrichtigung an ntfy gesendet!";
+    }).catch(() => {
+      document.getElementById("status").innerText = "❌ Fehler beim Senden an ntfy!";
+    });
+
+    // Discord Webhook Push
+    fetch("https://discord.com/api/webhooks/1373677948220997673/3zNNQdZsx89H-GrIjWEIyKzsnu4m4Va12TPGyyF0cKIuSsB13dEerdMOpk4ISS4bOpOe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        content: message
+      })
+    }).then(() => {
+      console.log("✅ Benachrichtigung an Discord gesendet!");
+    }).catch((err) => {
+      console.error("❌ Fehler beim Senden an Discord:", err);
+    });
+  </script>
+</head>
+<body style="font-family:sans-serif;text-align:center;margin-top:5em;">
+  <h2 id="status">⏳ Sende Benachrichtigungen ...</h2>
+</body>
+</html>
