@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Scan erkannt</title>
+  <script>
+    function sendeBenachrichtigung(mitStandort) {
+      let message = "Der Öffentliche NFC wurde gefunden und gescannt!";
+      if (mitStandort) {
+        message += `\n\n📍 Standort:\nLatitude: ${mitStandort.latitude}\nLongitude: ${mitStandort.longitude}\nGoogle Maps: https://maps.google.com/?q=${mitStandort.latitude},${mitStandort.longitude}`;
+      } else {
+        message += "\n\n⚠️ Standort konnte nicht ermittelt werden.";
+      }
+
+      fetch("https://ntfy.sh/scan-oeffentlich-nfc", {
+        method: "POST",
+        body: message
+      }).then(() => {
+        document.getElementById("status").innerText = "✅ Nachricht gesendet!\n\nDer NFC-Tag wurde gefunden. Danke!\n\n" +
+          (mitStandort ? "Ihr Standort wurde geteilt." : "Ihr Standort konnte nicht geteilt werden.");
+      }).catch(() => {
+        document.getElementById("status").innerText = "❌ Fehler beim Senden der Nachricht.";
+      });
+    }
+
+    // Standort abfragen mit hoher Genauigkeit
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          sendeBenachrichtigung(coords);
+        },
+        (error) => {
+          console.warn("Fehler bei der Standortermittlung:", error.message);
+          sendeBenachrichtigung(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      console.warn("Geolocation wird nicht unterstützt.");
+      sendeBenachrichtigung(null);
+    }
+  </script>
+</head>
+<body style="font-family:sans-serif;text-align:center;margin-top:5em;">
+  <h2 id="status">⏳ Bitte warte, Standort wird ermittelt...</h2>
+</body>
+</html>
